@@ -1,33 +1,14 @@
-// db.js
-const mysql = require('mysql2');
 require('dotenv').config();
+const sqlite3 = require('sqlite3').verbose();
 
-// Create connection to MySQL 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-});
-
-// Check connection 
-connection.connect((err) => {
+// SQLite connection (create the file if it doesn't exist)
+const db = new sqlite3.Database(process.env.DB_PATH || './restaurant_db.sqlite', (err) => {
     if (err) {
-        console.error("Database connection failed: " + err.stack);
+        console.error("Database connection failed: " + err.message);
         return;
     }
-    console.log("Connected to MySQL");
-
-    // Create the database 
-    connection.query("CREATE DATABASE IF NOT EXISTS restaurant_db", (err) => {
-        if (err) throw err;
-        console.log("Database 'restaurant_db' created or exists");
-
-        // Change database
-        connection.changeUser({ database: 'restaurant_db' }, (err) => {
-            if (err) throw err;
-            console.log("Now connected to 'restaurant_db'");
-        });
-    });
+    console.log("Connected to SQLite database");
+    db.run("PRAGMA foreign_keys = ON"); 
 });
 
-module.exports = connection;
+module.exports = db;
