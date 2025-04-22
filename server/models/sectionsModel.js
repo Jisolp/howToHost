@@ -1,11 +1,11 @@
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('../_node_modules/sqlite3/lib/sqlite3').verbose();
 const db = require('../config/db');
 
 const createSectionsTable = () => {
     const createTableSQL = `
     CREATE TABLE IF NOT EXISTS sections (
         id INTEGER PRIMARY KEY AUTOINCREMENT,  
-        name TEXT NOT NULL UNIQUE  
+        section_name TEXT NOT NULL UNIQUE  
     );
     `;
     db.run(createTableSQL, (err) => {

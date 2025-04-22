@@ -3,7 +3,7 @@ const router = express.Router();
 const resController = require('../controllers/resController');
 
 //create a reservation 
-router.post('/reservation',resController.createReservation);
+router.post('/reservation',resController.addReservation);
 
 //get all reservation 
 router.get('/reservation', resController.getReservations);

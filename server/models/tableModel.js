@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('../_node_modules/sqlite3/lib/sqlite3').verbose();
 const db = require('../config/db');
 
 // Create the tables table
@@ -7,10 +7,12 @@ const createTableTable = () => {
     CREATE TABLE IF NOT EXISTS tables (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         section TEXT,
-        table_number TEXT NOT NULL,
+        table_number INTEGER NOT NULL,
         size INTEGER NOT NULL,
         flexibility INTEGER DEFAULT 0,
-        status TEXT CHECK(status IN ('open', 'reserved', 'occupied')) DEFAULT 'open'
+        status TEXT CHECK(status IN ('open', 'reserved', 'occupied')) DEFAULT 'open',
+        server_id INTEGER,
+        FOREIGN KEY (server_id) REFERENCES servers(id)
     );
     `;
     
