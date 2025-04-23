@@ -11,6 +11,9 @@ router.get('/server', serverController.getServers);
 //get specific servers
 router.get('/server/:id',serverController.getServerByID);
 
+//get table counts for servers
+router.get('/server/:id/tables', serverController.getServerTableCount);
+
 //delete server
 router.delete('/server/:id', serverController.deleteServer);
 

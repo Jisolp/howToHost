@@ -5,14 +5,42 @@ function SearchReservationModal({ form, onClose, onCreated }) {
   const [suggestion, setSuggestion] = useState(null);
   const [loading, setLoading] = useState(false);
   const [excludedTables, setExcludedTables] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
+
 
   const fetchSuggestion = async (tablesToExclude) => {
     setLoading(true);
     try {
-      const res = await searchReservation({ 
-        ...form, 
-        excludedTables: tablesToExclude 
-      });
+      const now = new Date();
+      const hours = now.getHours() % 12 || 12;
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+      const currentTime = `${hours}:${minutes} ${ampm}`;
+  
+      function convertTo24Hour(timeStr) {
+        const [time, modifier] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+  
+        if (modifier === 'PM' && hours !== 12) hours += 12;
+        if (modifier === 'AM' && hours === 12) hours = 0;
+  
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      }
+  
+      const timeToSend = form.isWalkIn
+        ? currentTime
+        : convertTo24Hour(form.time);
+  
+      const payload = {
+        ...form,
+        time: timeToSend,
+        party: parseInt(form.party),
+        excludedTables: tablesToExclude
+      };
+  
+      console.log("Sending to /api/search:", payload);
+  
+      const res = await searchReservation(payload);
       setSuggestion(res.data);
     } catch (err) {
       console.error('No available table', err);
@@ -22,7 +50,7 @@ function SearchReservationModal({ form, onClose, onCreated }) {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchSuggestion([]);
   }, []);
@@ -75,14 +103,22 @@ function SearchReservationModal({ form, onClose, onCreated }) {
         table_id: suggestion.suggestedTableId,
         server_id: suggestion.suggestedServerId,
       };
-    
-      await createReservation(payload);
+      console.log('Payload:', payload);
+
+      const result = await createReservation(payload);
+      console.log("Reservation created result:", result);
   
       if (onCreated) {
         await onCreated();
       }
-      onClose();
-    } catch (err) {
+      setSuccessMessage("added!");
+      setTimeout(() => {
+        setSuccessMessage('');
+        onClose();
+        }, 500);
+
+    } 
+    catch (err) {
       console.error(err);
       alert('Error seating reservation.');
     }
@@ -90,7 +126,7 @@ function SearchReservationModal({ form, onClose, onCreated }) {
 
   if (loading || !suggestion) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-start sm:pl-10 pl-4">
         <div className="bg-white p-8 rounded shadow-md text-center">
           Loading...
         </div>
@@ -99,7 +135,7 @@ function SearchReservationModal({ form, onClose, onCreated }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-start sm:pl-10 pl-4">
       <div className="relative bg-white p-8 rounded shadow-md flex flex-col items-center gap-4 w-[300px]">
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl"
@@ -118,6 +154,9 @@ function SearchReservationModal({ form, onClose, onCreated }) {
         )}
 
         <div className="flex gap-4 mt-4">
+          {successMessage && (
+                <div className="text-green-600 font-semibold">{successMessage}</div>
+            )}
           <button 
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
             onClick={handleSeatHere}

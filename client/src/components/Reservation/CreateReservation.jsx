@@ -28,10 +28,19 @@ function CreateReservation({ onCreated }) {
     }
     setShowSearchModal(true);
   };
+  const resetForm = () => {
+    setForm({
+      customer_name: '',
+      phone_number: '',
+      time: '',
+      party: '',
+      isWalkIn: false,
+    });
+  };
+  
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md flex flex-col gap-3">
-      <h2 className="text-xl font-semibold mb-2">Add Reservation</h2>
 
       <form className="flex flex-col gap-3">
         {!form.isWalkIn && (
@@ -97,7 +106,10 @@ function CreateReservation({ onCreated }) {
       {showSearchModal && (
         <SearchReservationModal 
             form={form}
-            onClose={() => setShowSearchModal(false)}
+            onClose={() => {
+              setShowSearchModal(false);
+              resetForm();
+            }}
             onCreated={onCreated}
          />
       )}

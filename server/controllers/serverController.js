@@ -32,6 +32,16 @@ const getServerByID = async (req, res) => {
         res.status(500).json({ message: "server error" });
     }
 };
+const getServerTableCount = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const count = await serverService.getServerTableCount(id);
+      res.status(200).json({ count });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error getting table count" });
+    }
+};
 
 const deleteServer = async (req, res) => {
     try {
@@ -50,5 +60,6 @@ module.exports = {
     createServer,
     getServers,
     getServerByID,
+    getServerTableCount,
     deleteServer
 };

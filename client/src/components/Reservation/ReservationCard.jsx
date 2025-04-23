@@ -5,11 +5,10 @@ function ReservationCard({ reservation, onEdit, onDelete }) {
     <div className="border rounded-lg p-4 mb-4 shadow-sm bg-white flex flex-col gap-2">
       <div className="font-semibold text-lg">{reservation.customer_name}</div>
       <div className="text-sm text-gray-600">
-        <div>📞 {reservation.phone_number}</div>
-        <div>🕒 {reservation.time}</div>
-        <div>👥 Party of {reservation.party}</div>
-        <div>🪑 Table #{reservation.table_id || "?"}</div>
-        <div>🧑‍🍳 Server #{reservation.server_id || "?"}</div>
+        <div>{reservation.phone_number}</div>
+        <div>{reservation.time}</div>
+        <div>Party: {reservation.party}</div>
+        <div>Table:{ reservation.table_section}{reservation.table_number}</div>
         <div>Status: <span className="capitalize">{reservation.status}</span></div>
         {reservation.isWalkIn ? <div className="text-green-500 font-medium">Walk-in</div> : null}
       </div>

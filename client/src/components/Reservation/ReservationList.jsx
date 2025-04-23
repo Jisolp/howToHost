@@ -3,20 +3,21 @@ import { getReservations, deleteReservation } from '../../api';
 import ReservationCard from './ReservationCard';
 import UpdateReservation from './UpdateReservation';
 import CreateReservation from './CreateReservation';
+import { fetchTables } from '../../api';
 
-function ReservationList() {
-  const [reservations, setReservations] = useState([]);
+function ReservationList({ reservations, fetchReservations, fetchTables }) {
+  // const [reservations, setReservations] = useState([]);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const fetchReservations = async () => {
-    try {
-      const res = await getReservations();
-      setReservations(res.data.sort((a, b) => a.time.localeCompare(b.time))); 
-    } catch (err) {
-      console.error('Error fetching reservations', err);
-    }
-  };
+  // const fetchReservations = async () => {
+  //   try {
+  //     const res = await getReservations();
+  //     setReservations(res.data.sort((a, b) => a.time.localeCompare(b.time))); 
+  //   } catch (err) {
+  //     console.error('Error fetching reservations', err);
+  //   }
+  // };
   
 
   const handleDelete = async (reservation) => {
@@ -41,9 +42,13 @@ function ReservationList() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Reservations</h1>
       
-      <CreateReservation onCreated={fetchReservations} />  
+      <CreateReservation onCreated={async() => {
+        await fetchReservations();
+        await fetchTables();
+      }}
+      />  
+
       <div className="grid gap-4 mt-6">
         {reservations.length > 0 ? (
           reservations.map((res) => (

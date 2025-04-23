@@ -10,6 +10,7 @@ router.get('/reservation', resController.getReservations);
 
 //get specific reservation 
 router.get('/reservation/:id', resController.getReservationByID);
+router.get('/reservation/table/:tableId', resController.getReservationsByTableId);
 
 //update reservation 
 router.put('/reservation/:id',resController.updateReservation);

@@ -15,7 +15,11 @@ async function createTable({ section, table_number, size, flexibility = 0, statu
 }
 
 async function getTables() {
-    const query = 'SELECT * FROM tables';
+    const query = `
+        SELECT tables.*, servers.name AS server_name 
+        FROM tables 
+        LEFT JOIN servers ON tables.server_id = servers.id
+    `;
     return new Promise((resolve, reject) => {
         db.all(query, [], (err, rows) => {
             if (err) reject(err);
@@ -25,7 +29,12 @@ async function getTables() {
 }
 
 async function getTableByID(id) {
-    const query = 'SELECT * FROM tables WHERE id = ?';
+    const query = `
+        SELECT tables.*, servers.name AS server_name 
+        FROM tables 
+        LEFT JOIN servers ON tables.server_id = servers.id 
+        WHERE tables.id = ?
+    `;
     return new Promise((resolve, reject) => {
         db.get(query, [id], (err, row) => {
             if (err) reject(err);
@@ -52,6 +61,10 @@ async function updateTable(id, fields) {
         updates.push('flexibility = ?');
         values.push(fields.flexibility);
     }
+    if (typeof fields.server_id !== 'undefined') {
+        updates.push('server_id = ?');
+        values.push(fields.server_id);
+      }      
 
     if (updates.length === 0) {
         throw new Error("No valid fields to update");
@@ -72,17 +85,45 @@ async function updateTable(id, fields) {
         });
     });
 }
-
 async function deleteTable(id) {
-    const query = 'DELETE FROM tables WHERE id = ?';
     return new Promise((resolve, reject) => {
-        db.run(query, [id], function (err) {
-            if (err) reject(err);
-            else resolve(this.changes);
+      const deleteReservationsQuery = `DELETE FROM reservations WHERE table_id = ?`;
+      const deleteTableQuery = `DELETE FROM tables WHERE id = ?`;
+  
+      db.run(deleteReservationsQuery, [id], function (resErr) {
+        if (resErr) return reject(resErr);
+  
+        db.run(deleteTableQuery, [id], function (tableErr) {
+          if (tableErr) return reject(tableErr);
+          resolve(this.changes);
         });
+      });
     });
-}
+  }
+// async function deleteTable(id) {
+//     const query = 'DELETE FROM tables WHERE id = ?';
 
+//     const existingReservations = await getAll(`SELECT * FROM reservations WHERE table_id = ?`, [id]);
+
+//     if (existingReservations.length > 0) {
+//       throw new Error("This table has active reservations. Please delete them first.");
+//     }
+  
+//     return new Promise((resolve, reject) => {
+//         db.run(query, [id], function (err) {
+//             if (err) reject(err);
+//             else resolve(this.changes);
+//         });
+//     });
+// }
+function getAll(query, params = []) {
+    return new Promise((resolve, reject) => {
+      db.all(query, params, (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  }
 module.exports = {
     createTable,
     getTables,

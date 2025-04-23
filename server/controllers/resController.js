@@ -23,6 +23,34 @@ const getReservations = async (req, res) => {
     }
 };
 
+const getReservationsByTableId = async (req, res) => {
+  const { tableId } = req.params;
+  try {
+    const getReservationsByTableId = async (req, res) => {
+        const { tableId } = req.params;
+      
+        const query = `
+          SELECT reservations.*, servers.name AS server_name
+          FROM reservations
+          LEFT JOIN servers ON reservations.server_id = servers.id
+          WHERE reservations.table_id = ?
+          ORDER BY reservations.id DESC
+        `;
+      
+        db.all(query, [tableId], (err, rows) => {
+          if (err) {
+            console.error("Database error:", err.message);
+            return res.status(500).json({ message: "Database error" });
+          }
+      
+          res.status(200).json(rows);
+        });
+      };
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 const getReservationByID = async (req, res) => {
     try {
@@ -69,5 +97,6 @@ module.exports = {
     getReservations,
     getReservationByID,
     updateReservation,
-    deleteReservation
+    deleteReservation,
+    getReservationsByTableId
 };

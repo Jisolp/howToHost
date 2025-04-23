@@ -31,6 +31,15 @@ async function getServerByID(id) {
         });
     });
 }
+async function getServerTableCount(id) {
+    const query = 'SELECT COUNT(*) as count FROM tables WHERE server_id = ?';
+    return new Promise((resolve, reject) => {
+      db.get(query, [id], (err, row) => {
+        if (err) return reject(err);
+        resolve(row.count);
+      });
+    });
+  }
 
 async function deleteServer(id) {
     const query = 'DELETE FROM servers WHERE id = ?';
@@ -46,5 +55,6 @@ module.exports = {
     createServer,
     getServers,
     getServerByID,
+    getServerTableCount,
     deleteServer
 };

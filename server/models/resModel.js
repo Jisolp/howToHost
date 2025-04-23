@@ -13,7 +13,7 @@ const createReservationsTable = () => {
         isWalkIn INTEGER CHECK (isWalkIn IN (0,1)) NOT NULL,
         table_id INTEGER,
         server_id INTEGER,
-        FOREIGN KEY (table_id) REFERENCES tables(id),
+        FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE
         FOREIGN KEY (server_id) REFERENCES servers(id)
     )`;
 

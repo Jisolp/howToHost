@@ -3,6 +3,8 @@ const allocateTable = require('../utils/allocateTable');
 const { isValidName, isValidParty, isValidPhoneNum, isValidTime } = require('../utils/resValidation');
 
 async function createReservation({ customer_name, phone_number, time, party, isWalkIn, table_id, server_id }) {
+    
+    
   if (!isWalkIn && !isValidName(customer_name)) throw new Error("Invalid customer name");
   if (!isValidParty(party)) throw new Error("Invalid party size");
   if (!isWalkIn && !isValidPhoneNum(phone_number)) throw new Error("Invalid phone number");
@@ -43,12 +45,33 @@ async function createReservation({ customer_name, phone_number, time, party, isW
 
 
 async function getReservations() {
-    const query = `SELECT * FROM reservations WHERE isWalkIn = 0 ORDER BY time ASC`;
+    const query = `
+    SELECT 
+      r.*, 
+      t.section AS table_section, 
+      t.table_number AS table_number, 
+      s.name AS server_name
+    FROM reservations r
+    LEFT JOIN tables t ON r.table_id = t.id
+    LEFT JOIN servers s ON r.server_id = s.id
+    WHERE r.isWalkIn = 0
+    ORDER BY r.time ASC
+  `;
     return getAll(query);
 }
 
 async function getReservationByID(id) {
-    const query = `SELECT * FROM reservations WHERE id = ?`;
+    const query = `
+    SELECT 
+      r.*, 
+      t.section AS table_section, 
+      t.table_number AS table_number, 
+      s.name AS server_name
+    FROM reservations r
+    LEFT JOIN tables t ON r.table_id = t.id
+    LEFT JOIN servers s ON r.server_id = s.id
+    WHERE r.id = ?
+  `;
     return getOne(query, [id]);
 }
 
