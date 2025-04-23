@@ -33,9 +33,9 @@ app.get('/health', (req, res) => {
 });
 
 // Test route
-app.get('/', (req, res) => {
-    res.send('Server is running');
-});
+// app.get('/', (req, res) => {
+//     res.send('Server is running');
+// });
 
 // Error handling middleware (MUST be last)
 app.use((err, req, res, next) => {
