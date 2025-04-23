@@ -1,4 +1,5 @@
 require('../_node_modules/dotenv/lib/main').config();
+require('../_node_modules/dotenv/lib/main');
 const sqlite3 = require('../_node_modules/sqlite3/lib/sqlite3').verbose();
 
 // SQLite connection (create the file if it doesn't exist)
