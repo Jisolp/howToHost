@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
+require('../_node_modules/dotenv/lib/main');
 const db = new sqlite3.Database(process.env.DB_PATH || './restaurant_db.sqlite');
 
 const {createReservationsTable} = require('../models/resModel'); 
