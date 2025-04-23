@@ -9,6 +9,7 @@ const sectionsRoutes = require('./routes/sectionsRoutes');
 const serverRoutes = require('./routes/serverRoutes');
 const tableRoutes = require('./routes/tableRoutes');
 const searchRoutes = require('./routes/searchRoutes');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,8 +37,13 @@ app.get('/health', (req, res) => {
 // app.get('/', (req, res) => {
 //     res.send('Server is running');
 // });
+app.use(express.static(path.join(__dirname, '../client/build')));
 
-// Error handling middleware (MUST be last)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  });
+
+// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(err.status || 500).json({ message: err.message || "Server error" });
@@ -45,12 +51,4 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-});
-
-const path = require('path');
-
-app.use(express.static(path.join(__dirname, '../client/build')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
