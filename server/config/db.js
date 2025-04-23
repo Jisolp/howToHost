@@ -1,5 +1,5 @@
-require('../_node_modules/dotenv/lib/main').config();
-const sqlite3 = require('../_node_modules/sqlite3/lib/sqlite3').verbose();
+require('../node_modules/dotenv/lib/main').config();
+const sqlite3 = require('../node_modules/sqlite3/lib/sqlite3').verbose();
 
 // SQLite connection (create the file if it doesn't exist)
 const db = new sqlite3.Database(process.env.DB_PATH || './restaurant_db.sqlite', (err) => {
